@@ -1,0 +1,172 @@
+EESchema Schematic File Version 4
+LIBS:tuto-cache
+EELAYER 29 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L RF_Module:ESP32-WROOM-32D U?
+U 1 1 5D0B0197
+P 4450 2800
+F 0 "U?" H 4450 4381 50  0000 C CNN
+F 1 "ESP32-WROOM-32D" H 4450 4290 50  0000 C CNN
+F 2 "RF_Module:ESP32-WROOM-32" H 4450 1300 50  0001 C CNN
+F 3 "https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32d_esp32-wroom-32u_datasheet_en.pdf" H 4150 2850 50  0001 C CNN
+	1    4450 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 4350 4450 4200
+$Comp
+L Connector:Screw_Terminal_01x02 J?
+U 1 1 5D0A019F
+P 5900 3800
+F 0 "J?" H 5980 3792 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 5980 3701 50  0000 L CNN
+F 2 "TerminalBlock:TerminalBlock_bornier-2_P5.08mm" H 5900 3800 50  0001 C CNN
+F 3 "~" H 5900 3800 50  0001 C CNN
+	1    5900 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x02 J?
+U 1 1 5D0A97D6
+P 5900 3500
+F 0 "J?" H 5980 3492 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 5980 3401 50  0000 L CNN
+F 2 "TerminalBlock:TerminalBlock_bornier-2_P5.08mm" H 5900 3500 50  0001 C CNN
+F 3 "~" H 5900 3500 50  0001 C CNN
+	1    5900 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:Screw_Terminal_01x02 J?
+U 1 1 5D0AA559
+P 5900 3200
+F 0 "J?" H 5980 3192 50  0000 L CNN
+F 1 "Screw_Terminal_01x02" H 5980 3101 50  0000 L CNN
+F 2 "TerminalBlock:TerminalBlock_bornier-2_P5.08mm" H 5900 3200 50  0001 C CNN
+F 3 "~" H 5900 3200 50  0001 C CNN
+	1    5900 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 3200 5050 3200
+Wire Wire Line
+	5700 3500 5050 3300
+Wire Wire Line
+	5700 3800 5050 3400
+Wire Wire Line
+	5700 3300 5550 3300
+Wire Wire Line
+	5550 3300 5550 3600
+Wire Wire Line
+	5700 3600 5550 3600
+Connection ~ 5550 3600
+Wire Wire Line
+	5550 3600 5550 3900
+Wire Wire Line
+	5700 3900 5550 3900
+$Comp
+L Connector:Screw_Terminal_01x02 POWER
+U 1 1 5D0BB052
+P 2600 1600
+F 0 "POWER" H 2518 1817 50  0000 C CNN
+F 1 "5V - GND" H 2518 1726 50  0000 C CNN
+F 2 "TerminalBlock:TerminalBlock_Altech_AK300-2_P5.00mm" H 2600 1600 50  0001 C CNN
+F 3 "~" H 2600 1600 50  0001 C CNN
+	1    2600 1600
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR0101
+U 1 1 5D0C75F0
+P 3000 1600
+F 0 "#PWR0101" H 3000 1450 50  0001 C CNN
+F 1 "+5V" H 3015 1773 50  0000 C CNN
+F 2 "" H 3000 1600 50  0001 C CNN
+F 3 "" H 3000 1600 50  0001 C CNN
+	1    3000 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0102
+U 1 1 5D0C7E96
+P 3000 1700
+F 0 "#PWR0102" H 3000 1450 50  0001 C CNN
+F 1 "GND" H 3005 1527 50  0000 C CNN
+F 2 "" H 3000 1700 50  0001 C CNN
+F 3 "" H 3000 1700 50  0001 C CNN
+	1    3000 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 1600 3000 1600
+Wire Wire Line
+	2800 1700 3000 1700
+$Comp
+L power:+5V #PWR0103
+U 1 1 5D0C8E02
+P 3350 3400
+F 0 "#PWR0103" H 3350 3250 50  0001 C CNN
+F 1 "+5V" H 3365 3573 50  0000 C CNN
+F 2 "" H 3350 3400 50  0001 C CNN
+F 3 "" H 3350 3400 50  0001 C CNN
+	1    3350 3400
+	1    0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR0104
+U 1 1 5D0C95C9
+P 3350 3200
+F 0 "#PWR0104" H 3350 2950 50  0001 C CNN
+F 1 "GND" V 3355 3072 50  0000 R CNN
+F 2 "" H 3350 3200 50  0001 C CNN
+F 3 "" H 3350 3200 50  0001 C CNN
+	1    3350 3200
+	0    -1   1    0   
+$EndComp
+$Comp
+L power:GND #PWR0105
+U 1 1 5D0CAB42
+P 5550 4000
+F 0 "#PWR0105" H 5550 3750 50  0001 C CNN
+F 1 "GND" H 5555 3827 50  0000 C CNN
+F 2 "" H 5550 4000 50  0001 C CNN
+F 3 "" H 5550 4000 50  0001 C CNN
+	1    5550 4000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5550 4000 5550 3900
+Connection ~ 5550 3900
+$Comp
+L Device:SDbreakout Micro-SD?
+U 1 1 5D0DCC68
+P 2950 3000
+F 0 "Micro-SD?" H 2983 3565 50  0000 C CNN
+F 1 "SDbreakout" H 2983 3474 50  0000 C CNN
+F 2 "TerminalBlock_4Ucon:TerminalBlock_4Ucon_1x09_P3.50mm_Vertical" H 2750 2600 50  0001 C CNN
+F 3 "" H 2750 2600 50  0001 C CNN
+	1    2950 3000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 3100 3850 2800
+Wire Wire Line
+	3350 3000 3850 3300
+Wire Wire Line
+	3350 2900 3850 3100
+Wire Wire Line
+	3350 2800 3850 1900
+$EndSCHEMATC
