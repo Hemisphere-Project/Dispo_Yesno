@@ -34,40 +34,52 @@ TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
 
 void setup()
 {
+  display1.setBrightness(0x03);
+  display2.setBrightness(0x03);
+
+  Serial.begin(115200);
 }
 
 void loop()
 {
-  uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-  uint8_t all[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-  display1.setBrightness(0x03);
-  display2.setBrightness(0x03);
+  // uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+  // uint8_t all[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
-  display1.setSegments(blank);
-  display2.setSegments(blank);
-  delay(1000);
-  display1.showNumberDec(123456, false);
-  display2.showNumberDec(789012, false);
-  delay(3000);
+  // display2.setBrightness(0x03);
+  //
+  // display1.setSegments(blank);
+  // display2.setSegments(blank);
+  // delay(1000);
 
-  display1.setSegments(one_s);
-  display2.setSegments(one_s);
-  delay(200);
-  display1.setSegments(two_s);
-  display2.setSegments(two_s);
-  delay(200);
-  display1.setSegments(three_s);
-  display2.setSegments(three_s);
-  delay(200);
-  display1.setSegments(four_s);
-  display2.setSegments(four_s);
-  delay(200);
-  display1.setSegments(five_s);
-  display2.setSegments(five_s);
-  delay(200);
-  display1.setSegments(six_s);
-  display2.setSegments(six_s);
-  delay(200);
+  display1.showNumberDec(12345, false);
+
+
+  // ADJUST ORDER
+  int num = 123456;
+  // if(num > 999999){
+  //   SAY ITS TOO MUCH
+  // }
+
+  String strA = String(num);
+  while (strA.length()<6) { strA = "0"+strA; }
+  String strB="000000";
+  strB.setCharAt(0,strA.charAt(2));
+  strB.setCharAt(1,strA.charAt(1));
+  strB.setCharAt(2,strA.charAt(0));
+  strB.setCharAt(3,strA.charAt(5));
+  strB.setCharAt(4,strA.charAt(4));
+  strB.setCharAt(5,strA.charAt(3));
+  int newnum = atoi(strB.c_str());
+
+
+  display2.showNumberDec(newnum, false);
+
+  Serial.print(strA);
+  Serial.print(".   .");
+  Serial.print(strB);
+  Serial.print(".   .");
+  Serial.println(newnum);
+
 
 
 
