@@ -42,6 +42,7 @@ bool acting = false;
 unsigned long actionFrame = 0;
 unsigned long framePeriod = 100;
 unsigned long TlastFrame = 0;
+CRGB voteColor;
 
 // MEMORY
 Preferences preferences;
@@ -174,6 +175,7 @@ void votedYes(){
   justVoted = "yes";
   acting = true;
   actionFrame = 0;
+  voteColor = CRGB(255,255,255);
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
   // display1.showNumberDec(yes_NUM, false);
   // display2.showNumberDec(no_NUM, false);
@@ -189,6 +191,7 @@ void votedNo(){
   justVoted = "no";
   acting = true;
   actionFrame = 0;
+  voteColor = CRGB(255,0,0);
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
   // display1.showNumberDec(yes_NUM, false);
   // display2.showNumberDec(no_NUM, false);
@@ -212,43 +215,23 @@ void checkActions(){
     actionFrame ++;
     TlastFrame = Tnow;
 
-    CRGB voteColor;
+
+    if(actionFrame<=7) {
+      leds[actionFrame] = voteColor; // 1 2 3 4 5 6 7
+      Serial.println(actionFrame);
+    }
+    if((actionFrame>7)&&(actionFrame<=10)) {
       if(justVoted=="yes"){
-        voteColor = CRGB(255,255,255);
+        // leds[actionFrame] = voteColor; // 9 31 50
       }
       if(justVoted=="no"){
-        voteColor = CRGB(255,0,0);
+        // leds[actionFrame] = voteColor; // 83 102 121
       }
-
-    if(actionFrame<20) {
-      leds[actionFrame] = voteColor;
     }
-    if(actionFrame<20) {
-      leds[actionFrame] = voteColor;
-    }
-
-
-
 
 
   }
 
-  // if(acting==true){
-  //
-  //   if(justVoted=="yes"){
-  //     FastLED.clear();
-  //     for (int i = 0; i < yes_NUM; i++) {
-  //       leds[i] = CRGB(255,255,255);
-  //     }
-  //   }
-  //   if(justVoted=="no"){
-  //     FastLED.clear();
-  //     for (int i = 0; i < no_NUM; i++) {
-  //       leds[i] = CRGB(255,0,0);
-  //     }
-  //   }
-  //
-  // }
 
 }
 
