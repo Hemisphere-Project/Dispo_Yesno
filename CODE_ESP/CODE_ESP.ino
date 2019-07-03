@@ -25,8 +25,7 @@ CRGB leds[NUM_LEDS];
 // Btns States
 int yesState, noState, resetState = 0;
 // Yes & No
-unsigned long Taction = 0;
-unsigned long Tnow = 0;
+unsigned long Taction, Tnow = 0;
 unsigned long eventDuration = 1000;
 bool listenToYesNo = true;
 // Reset
@@ -81,7 +80,7 @@ void setup() {
   pinMode(NOPIN, INPUT_PULLUP);
   pinMode(RESETPIN, INPUT_PULLUP);
 
-  // SPI
+  // SPI (SD)
   // SPI.begin(18, 19, 23, 5); // SCK / MISO(DO) / MOSI(DI) / CS(SS) DEFAULT
   SPI.begin(21, 19, 18, 5);  // SCK / MISO(DO) / MOSI(DI) / CS(SS)
   getMemory();
