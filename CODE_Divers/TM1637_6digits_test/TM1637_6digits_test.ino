@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include "TM1637Display.h"
+// #include "TM1637Display.h"
+#include "src/TM1637/TM1637Display.h"
 
 // USING TM1637 LIB - OPTIMIZED FOR 6 DIGITS
 // https://github.com/gdampf/TM1637
@@ -36,12 +37,12 @@ const uint8_t six_s[] = { 0,0,0,0,0,SEG_D };
 
 TM1637Display display1(CLK1, DIO1, 100, NUMBEROFDIGITS);
 TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
+int numToDisplay = 1;
 
 void setup()
 {
   display1.setBrightness(0x03);
   display2.setBrightness(0x03);
-
   Serial.begin(115200);
 }
 
@@ -51,8 +52,6 @@ void loop()
   display1.setSegments(blank);
   display2.setSegments(blank);
 
-
-  int numToDisplay = 12034;
   adjustDigitsOrder_method1(numToDisplay, display1);
   adjustDigitsOrder_method2(numToDisplay, display2);
 
@@ -68,58 +67,57 @@ void loop()
   delay(50);
   display1.setSegments(line3);
   display2.setSegments(line3);
-  
+
+  numToDisplay *= 10;
+  if (numToDisplay>=999999) {
+    numToDisplay = numToDisplay/1000000 + 1;
+  }
+
 }
 
 void adjustDigitsOrder_method1(int num, TM1637Display display){
 
   if(num >= 999999){ return; }
 
-  int nextnum = num;
   int digit;
   uint8_t data[6];
 
   digit = num % 10;
-  num /= 10;
-  if(nextnum!=0){
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 3);
   }
-  nextnum /= 10;
-  digit = num % 10;
   num /= 10;
-  if(nextnum!=0){
+  digit = num % 10;
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 4);
   }
-  nextnum /= 10;
-  digit = num % 10;
   num /= 10;
-  if(nextnum!=0){
+  digit = num % 10;
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 5);
   }
-  nextnum /= 10;
-  digit = num % 10;
   num /= 10;
-  if(nextnum!=0){
+  digit = num % 10;
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 0);
   }
-  nextnum /= 10;
-  digit = num % 10;
   num /= 10;
-  if(nextnum!=0){
+  digit = num % 10;
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 1);
   }
-  nextnum /= 10;
-  digit = num % 10;
   num /= 10;
-  if(nextnum!=0){
+  digit = num % 10;
+  if(num!=0){
     data[0] = display1.encodeDigit(digit);
     display.setSegments(data, 1, 2);
   }
+
 }
 
 
@@ -140,6 +138,10 @@ void adjustDigitsOrder_method2(int num, TM1637Display display){
 
   int newnum = atoi(strB.c_str());
 
-  display.showNumberDec(newnum, false);
+  Serial.print(strB);
+  Serial.print("  ");
+  Serial.println(newnum);
+
+  display.showNumberDec(newnum, true);
 
 }
