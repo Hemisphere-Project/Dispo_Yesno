@@ -11,7 +11,7 @@
 #include "src/TM1637/TM1637Display.h"
 
 
-#define NUM_LEDS 50
+#define NUM_LEDS 150
 #define LED_PIN 0
 #define BRIGHTNESS  50
 #define LED_TYPE    WS2811
@@ -26,7 +26,7 @@ CRGB leds[NUM_LEDS];
 int yesState, noState, resetState = 0;
 // Yes & No
 unsigned long Taction, Tnow = 0;
-unsigned long eventDuration = 1000;
+unsigned long eventDuration = 10000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
@@ -35,9 +35,13 @@ unsigned long resetDuration = 10000;
 bool pressingReset = false;
 bool resetting = false;
 
+
+// ANIMATE
+char *justVoted = "none";
 bool acting = false;
 unsigned long actionFrame = 0;
-char *justVoted = "none";
+unsigned long framePeriod = 100;
+unsigned long TlastFrame = 0;
 
 // MEMORY
 Preferences preferences;
@@ -95,7 +99,8 @@ void setup() {
 
 
 void loop() {
-  // FastLED.clear();
+
+  FastLED.clear();
 
   Tnow = millis();
   checkBtns();
@@ -203,22 +208,47 @@ void endOfAction(){
 
 void checkActions(){
 
-  if(acting==true){
+  if ((Tnow-TlastFrame > framePeriod)&&(acting==true)){
+    actionFrame ++;
+    TlastFrame = Tnow;
 
-    if(justVoted=="yes"){
-      FastLED.clear();
-      for (int i = 0; i < yes_NUM; i++) {
-        leds[i] = CRGB(255,255,255);
+    CRGB voteColor;
+      if(justVoted=="yes"){
+        voteColor = CRGB(255,255,255);
       }
-    }
-    if(justVoted=="no"){
-      FastLED.clear();
-      for (int i = 0; i < no_NUM; i++) {
-        leds[i] = CRGB(255,0,0);
+      if(justVoted=="no"){
+        voteColor = CRGB(255,0,0);
       }
+
+    if(actionFrame<20) {
+      leds[actionFrame] = voteColor;
     }
+    if(actionFrame<20) {
+      leds[actionFrame] = voteColor;
+    }
+
+
+
+
 
   }
+
+  // if(acting==true){
+  //
+  //   if(justVoted=="yes"){
+  //     FastLED.clear();
+  //     for (int i = 0; i < yes_NUM; i++) {
+  //       leds[i] = CRGB(255,255,255);
+  //     }
+  //   }
+  //   if(justVoted=="no"){
+  //     FastLED.clear();
+  //     for (int i = 0; i < no_NUM; i++) {
+  //       leds[i] = CRGB(255,0,0);
+  //     }
+  //   }
+  //
+  // }
 
 }
 
