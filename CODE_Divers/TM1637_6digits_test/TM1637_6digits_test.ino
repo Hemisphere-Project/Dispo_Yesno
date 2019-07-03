@@ -1,6 +1,6 @@
 #include <Arduino.h>
 // #include "TM1637Display.h"
-#include "src/TM1637/TM1637Display.h"
+#include "src/TM1637/TM1637Display.h" // To use the lib files located inside the sketch folder, not in the arduino default folder
 
 // USING TM1637 LIB - OPTIMIZED FOR 6 DIGITS
 // https://github.com/gdampf/TM1637
@@ -27,13 +27,6 @@ const uint8_t line1[] = { SEG_D,SEG_D,SEG_D,SEG_D,SEG_D,SEG_D };
 const uint8_t line2[] = { SEG_G,SEG_G,SEG_G,SEG_G,SEG_G,SEG_G };
 const uint8_t line3[] = { SEG_A,SEG_A,SEG_A,SEG_A,SEG_A,SEG_A };
 
-const uint8_t one_s[] = { SEG_D,0,0,0,0,0 };
-const uint8_t two_s[] = { 0,SEG_D,0,0,0,0 };
-const uint8_t three_s[] = { 0,0,SEG_D,0,0,0 };
-const uint8_t four_s[] = { 0,0,0,SEG_D,0,0 };
-const uint8_t five_s[] = { 0,0,0,0,SEG_D,0 };
-const uint8_t six_s[] = { 0,0,0,0,0,SEG_D };
-
 
 TM1637Display display1(CLK1, DIO1, 100, NUMBEROFDIGITS);
 TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
@@ -52,8 +45,8 @@ void loop()
   display1.setSegments(blank);
   display2.setSegments(blank);
 
-  adjustDigitsOrder_method1(numToDisplay, display1);
-  adjustDigitsOrder_method2(numToDisplay, display2);
+  showNumber_NEWORDER1(numToDisplay, display1);
+  showNumber_NEWORDER2(numToDisplay, display2);
 
 
   // ANIM UP
@@ -75,7 +68,7 @@ void loop()
 
 }
 
-void adjustDigitsOrder_method1(int num, TM1637Display display){
+void showNumber_NEWORDER1(int num, TM1637Display display){
 
   if(num >= 999999){ return; }
 
@@ -121,7 +114,7 @@ void adjustDigitsOrder_method1(int num, TM1637Display display){
 }
 
 
-void adjustDigitsOrder_method2(int num, TM1637Display display){
+void showNumber_NEWORDER2(int num, TM1637Display display){
 
   if(num >= 999999){ return; }
 

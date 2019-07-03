@@ -8,7 +8,7 @@
 #include <Preferences.h>
 // TM1637 DISPLAY
 #include <Arduino.h>
-#include "TM1637Display.h"
+#include "src/TM1637/TM1637Display.h"
 
 
 #define NUM_LEDS 50
@@ -61,7 +61,10 @@ unsigned long backupPeriod_EEPROM = 14400000; // 4 hours
 
 TM1637Display display1(CLK1, DIO1, 100, NUMBEROFDIGITS);
 TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
-
+const uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+const uint8_t line1[] = { SEG_D,SEG_D,SEG_D,SEG_D,SEG_D,SEG_D };
+const uint8_t line2[] = { SEG_G,SEG_G,SEG_G,SEG_G,SEG_G,SEG_G };
+const uint8_t line3[] = { SEG_A,SEG_A,SEG_A,SEG_A,SEG_A,SEG_A };
 
 void setup() {
 
@@ -86,6 +89,8 @@ void setup() {
   // DISPLAYS
   display1.setBrightness(0x03);
   display2.setBrightness(0x03);
+  display1.setSegments(blank);
+  display2.setSegments(blank);
 
 }
 
@@ -166,8 +171,10 @@ void votedYes(){
   acting = true;
   actionFrame = 0;
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  display1.showNumberDec(yes_NUM, false);
-  display2.showNumberDec(no_NUM, false);
+  // display1.showNumberDec(yes_NUM, false);
+  // display2.showNumberDec(no_NUM, false);
+  showNumber_NEWORDER1(yes_NUM, display1);
+  showNumber_NEWORDER1(no_NUM, display2);
 
 }
 
@@ -179,8 +186,10 @@ void votedNo(){
   acting = true;
   actionFrame = 0;
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  display1.showNumberDec(yes_NUM, false);
-  display2.showNumberDec(no_NUM, false);
+  // display1.showNumberDec(yes_NUM, false);
+  // display2.showNumberDec(no_NUM, false);
+  showNumber_NEWORDER1(yes_NUM, display1);
+  showNumber_NEWORDER1(no_NUM, display2);
 
 }
 
