@@ -19,14 +19,16 @@
 CRGB leds[NUM_LEDS];
 
 
-#define YESPIN        4
-#define NOPIN         16
+// #define YESPIN        4
+// #define NOPIN         16
+#define NOPIN         4
+#define YESPIN        16
 #define RESETPIN      17
 // Btns States
 int yesState, noState, resetState = 0;
 // Yes & No
 unsigned long Taction, Tnow = 0;
-unsigned long eventDuration = 10000;
+unsigned long eventDuration = 5000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
@@ -40,9 +42,16 @@ bool resetting = false;
 char *justVoted = "none";
 bool acting = false;
 unsigned long actionFrame = 0;
-unsigned long framePeriod = 100;
+unsigned long framePeriod = 200;
 unsigned long TlastFrame = 0;
 CRGB voteColor;
+CRGB noColor = CRGB(255,0,0);
+CRGB yesColor = CRGB(255,255,255);
+int roadNumber = 0;
+int roadsNo[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
+int roadsYes[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
+int proportionArray[150];
+int mappingOffset = 74; // MAPPING: NUM PIXELS BEFORE DATA GAP
 
 // MEMORY
 Preferences preferences;
@@ -101,7 +110,7 @@ void setup() {
 
 void loop() {
 
-  FastLED.clear();
+  // FastLED.clear();
 
   Tnow = millis();
   checkBtns();
@@ -175,12 +184,13 @@ void votedYes(){
   justVoted = "yes";
   acting = true;
   actionFrame = 0;
-  voteColor = CRGB(255,255,255);
+  roadNumber = random(0,4); //Min included, Max excluded
+  Serial.println(roadNumber);
+  voteColor = yesColor;
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  // display1.showNumberDec(yes_NUM, false);
-  // display2.showNumberDec(no_NUM, false);
-  showNumber_NEWORDER1(yes_NUM, display1);
-  showNumber_NEWORDER1(no_NUM, display2);
+  showNumber_NEWORDER1(no_NUM, display1);
+  showNumber_NEWORDER1(yes_NUM, display2);
+
 
 }
 
@@ -191,12 +201,13 @@ void votedNo(){
   justVoted = "no";
   acting = true;
   actionFrame = 0;
-  voteColor = CRGB(255,0,0);
+  roadNumber = random(0,4);
+  Serial.println(roadNumber);
+  voteColor = noColor;
   Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  // display1.showNumberDec(yes_NUM, false);
-  // display2.showNumberDec(no_NUM, false);
-  showNumber_NEWORDER1(yes_NUM, display1);
-  showNumber_NEWORDER1(no_NUM, display2);
+  showNumber_NEWORDER1(no_NUM, display1);
+  showNumber_NEWORDER1(yes_NUM, display2);
+
 
 }
 
@@ -209,28 +220,79 @@ void endOfAction(){
 }
 
 
+
+
 void checkActions(){
 
   if ((Tnow-TlastFrame > framePeriod)&&(acting==true)){
-    actionFrame ++;
-    TlastFrame = Tnow;
+
+    // FastLED.clear();
+
+
 
 
     if(actionFrame<=7) {
       leds[actionFrame] = voteColor; // 1 2 3 4 5 6 7
-      Serial.println(actionFrame);
     }
     if((actionFrame>7)&&(actionFrame<=10)) {
-      if(justVoted=="yes"){
-        // leds[actionFrame] = voteColor; // 9 31 50
-      }
-      if(justVoted=="no"){
-        // leds[actionFrame] = voteColor; // 83 102 121
-      }
+      if(justVoted=="yes"){ int position = roadsYes[roadNumber][actionFrame-8]; leds[position] = voteColor; }
+      if(justVoted=="no"){ int position = roadsNo[roadNumber][actionFrame-8]; leds[position] = voteColor; }
+
     }
+    if((actionFrame>10)&&(actionFrame<=150)) {
+      getProportions();
+    }
+
+    actionFrame ++;
+    TlastFrame = Tnow;
 
 
   }
+
+
+}
+
+void getProportions(){
+
+
+
+  float no_NUM_f, no_PROP_f, yes_NUM_f, yes_PROP_f;
+  no_NUM_f = no_NUM;
+  yes_NUM_f = yes_NUM;
+  int no_PROP, yes_PROP;
+
+  no_PROP_f = (no_NUM_f/(no_NUM_f+yes_NUM_f))*150;
+  no_PROP = int(no_PROP_f);
+  yes_PROP = 150 - no_PROP;
+
+
+  for (int i = mappingOffset; i >= 0 ; i--) {
+    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
+    if(no_PROP==0){ proportionArray[i] = 1; }
+  }
+
+  for (int i = mappingOffset+1; i < 150 ; i++) {
+    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
+    if(no_PROP==0){ proportionArray[i] = 1; }
+  }
+
+
+  //SHOW
+
+  for (int i = 0; i < 150; i++) {
+
+    if(proportionArray[i]==0){
+      leds[i] = noColor;
+    }
+    if(proportionArray[i]==1){
+      leds[i] = yesColor;
+    }
+
+  }
+
+  // + SHUFFLE ALGO
+
+
 
 
 }

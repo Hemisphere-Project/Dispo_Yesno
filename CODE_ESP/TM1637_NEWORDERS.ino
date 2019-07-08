@@ -3,6 +3,8 @@ void showNumber_NEWORDER1(int num, TM1637Display display){
 
   if(num >= 999999){ return; }
 
+  display.setSegments(blank);
+
   int digit;
   uint8_t data[6];
 
@@ -48,6 +50,8 @@ void showNumber_NEWORDER1(int num, TM1637Display display){
 void showNumber_NEWORDER2(int num, TM1637Display display){
 
   if(num >= 999999){ return; }
+
+  display.setSegments(blank);
 
   String strA = String(num);
   while (strA.length()<6) { strA = "0"+strA; }
