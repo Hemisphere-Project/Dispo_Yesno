@@ -18,9 +18,6 @@
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
 
-
-// #define YESPIN        4
-// #define NOPIN         16
 #define NOPIN         4
 #define YESPIN        16
 #define RESETPIN      17
@@ -28,7 +25,7 @@ CRGB leds[NUM_LEDS];
 int yesState, noState, resetState = 0;
 // Yes & No
 unsigned long Taction, Tnow = 0;
-unsigned long eventDuration = 5000;
+unsigned long eventDuration = 10000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
@@ -41,8 +38,9 @@ bool resetting = false;
 // ANIMATE
 char *justVoted = "none";
 bool acting = false;
-unsigned long actionFrame = 0;
-unsigned long framePeriod = 200;
+int actionFrame = 0;
+int framePeriod = 100;
+int framePeriodTemp;
 unsigned long TlastFrame = 0;
 CRGB voteColor;
 CRGB noColor = CRGB(255,0,0);
@@ -52,6 +50,10 @@ int roadsNo[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47
 int roadsYes[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
 int proportionArray[150];
 int mappingOffset = 74; // MAPPING: NUM PIXELS BEFORE DATA GAP
+int orderArray[NUM_LEDS];
+
+// OSCILLATE
+int choosePeriod = 100;
 
 // MEMORY
 Preferences preferences;
@@ -78,6 +80,16 @@ const uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 const uint8_t line1[] = { SEG_D,SEG_D,SEG_D,SEG_D,SEG_D,SEG_D };
 const uint8_t line2[] = { SEG_G,SEG_G,SEG_G,SEG_G,SEG_G,SEG_G };
 const uint8_t line3[] = { SEG_A,SEG_A,SEG_A,SEG_A,SEG_A,SEG_A };
+const uint8_t NO_seg[] = {0,
+  SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F,   // O
+  SEG_A | SEG_B | SEG_C | SEG_E | SEG_F,          // N
+  0,0,0
+};
+const uint8_t SD_seg[] = {0,
+  SEG_B | SEG_C | SEG_D | SEG_E | SEG_G,   // D
+  SEG_A | SEG_C | SEG_D | SEG_F | SEG_G,   // S
+  0,0,0
+};
 
 void setup() {
 
@@ -94,16 +106,21 @@ void setup() {
   pinMode(NOPIN, INPUT_PULLUP);
   pinMode(RESETPIN, INPUT_PULLUP);
 
-  // SPI (SD)
-  // SPI.begin(18, 19, 23, 5); // SCK / MISO(DO) / MOSI(DI) / CS(SS) DEFAULT
-  SPI.begin(21, 19, 18, 5);  // SCK / MISO(DO) / MOSI(DI) / CS(SS)
-  getMemory();
-
   // DISPLAYS
   display1.setBrightness(0x03);
   display2.setBrightness(0x03);
   display1.setSegments(blank);
   display2.setSegments(blank);
+
+  // SPI (SD)
+  // SPI.begin(18, 19, 23, 5); // SCK / MISO(DO) / MOSI(DI) / CS(SS) DEFAULT
+  SPI.begin(21, 19, 18, 5);  // SCK / MISO(DO) / MOSI(DI) / CS(SS)
+  getMemory();
+
+  //FILL ARRAYS
+  for (int i = 0; i < NUM_LEDS; i++) {
+    orderArray[i]=i;
+  }
 
 }
 
@@ -115,7 +132,8 @@ void loop() {
   Tnow = millis();
   checkBtns();
   checkBackups();
-  checkActions();
+  animate();
+  oscillate();
   FastLED.show();
   delay(1);
 
@@ -136,12 +154,16 @@ void checkBtns(){
   if ((yesState == LOW)&&(listenToYesNo==true)) {
     listenToYesNo=false;
     Taction = Tnow;
-    votedYes();
+    yes_NUM ++;
+    justVoted = "yes";
+    launchAnim();
   }
   if ((noState == LOW)&&(listenToYesNo==true)) {
     listenToYesNo=false;
     Taction = Tnow;
-    votedNo();
+    no_NUM ++;
+    justVoted = "no";
+    launchAnim();
   }
   // ACTION OVER - LISTEN AGAIN
   if ((Tnow-Taction > eventDuration)&&(listenToYesNo==false)){
@@ -178,37 +200,17 @@ void checkBtns(){
 /////////////////   ACTIONS   ////////////////
 //////////////////////////////////////////////
 
-void votedYes(){
+void launchAnim(){
 
-  yes_NUM ++;
-  justVoted = "yes";
   acting = true;
   actionFrame = 0;
-  roadNumber = random(0,4); //Min included, Max excluded
-  Serial.println(roadNumber);
-  voteColor = yesColor;
-  Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  showNumber_NEWORDER1(no_NUM, display1);
-  showNumber_NEWORDER1(yes_NUM, display2);
-
-
-}
-
-
-void votedNo(){
-
-  no_NUM ++;
-  justVoted = "no";
-  acting = true;
-  actionFrame = 0;
+  framePeriodTemp = framePeriod;
+  shuffleArray(orderArray,NUM_LEDS);
+  calcProportions();
   roadNumber = random(0,4);
-  Serial.println(roadNumber);
-  voteColor = noColor;
-  Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-  showNumber_NEWORDER1(no_NUM, display1);
-  showNumber_NEWORDER1(yes_NUM, display2);
-
-
+  if(justVoted=="yes"){voteColor = yesColor;}
+  if(justVoted=="no"){voteColor = noColor;}
+  // Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
 }
 
 void endOfAction(){
@@ -221,39 +223,60 @@ void endOfAction(){
 
 
 
+void animate(){
 
-void checkActions(){
+  if ((Tnow-TlastFrame > framePeriodTemp)&&(acting==true)){
 
-  if ((Tnow-TlastFrame > framePeriod)&&(acting==true)){
-
-    // FastLED.clear();
-
-
-
-
+    // CHEMIN FIXE
     if(actionFrame<=7) {
+      FastLED.clear();
       leds[actionFrame] = voteColor; // 1 2 3 4 5 6 7
     }
+    // CHEMIN GAUCHE DROITE
     if((actionFrame>7)&&(actionFrame<=10)) {
-      if(justVoted=="yes"){ int position = roadsYes[roadNumber][actionFrame-8]; leds[position] = voteColor; }
-      if(justVoted=="no"){ int position = roadsNo[roadNumber][actionFrame-8]; leds[position] = voteColor; }
-
+      FastLED.clear();
+      if(justVoted=="yes"){ int pos = roadsYes[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
+      if(justVoted=="no"){ int pos = roadsNo[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
     }
-    if((actionFrame>10)&&(actionFrame<=150)) {
-      getProportions();
+    // FILL
+    if((actionFrame>16)&&(actionFrame<=170)) {
+      int pos = orderArray[actionFrame-17];
+      if(proportionArray[pos]==0){ leds[pos] = noColor; }
+      if(proportionArray[pos]==1){ leds[pos] = yesColor; }
+      framePeriodTemp = framePeriodTemp - actionFrame*1.5;
+      if(framePeriodTemp<10){ framePeriodTemp = 10; }
     }
 
+    if(actionFrame==170){
+      framePeriodTemp = framePeriod;
+    }
+
+    // DISPLAYS
+    if ((actionFrame % 3 == 0)&&(actionFrame < 10)) { display1.setSegments(line2); display2.setSegments(line2); }
+    if ((actionFrame % 3 == 1)&&(actionFrame < 10)) { display1.setSegments(line3); display2.setSegments(line3); }
+    if ((actionFrame % 3 == 2)&&(actionFrame < 10)) { display1.setSegments(line1); display2.setSegments(line1); }
+    if(actionFrame==10){
+      showNumber_NEWORDER1(no_NUM, display1);
+      showNumber_NEWORDER1(yes_NUM, display2);
+    }
+
+    if (actionFrame>200) {
+      int pos = orderArray[actionFrame-201];
+      leds[pos] = CRGB(0,0,0) ;
+      framePeriodTemp = framePeriodTemp - actionFrame/10;
+      if(framePeriodTemp<10){ framePeriodTemp = 10; }
+    }
+
+
+    // NEXT
     actionFrame ++;
     TlastFrame = Tnow;
 
-
   }
-
 
 }
 
-void getProportions(){
-
+void calcProportions(){
 
 
   float no_NUM_f, no_PROP_f, yes_NUM_f, yes_PROP_f;
@@ -265,7 +288,6 @@ void getProportions(){
   no_PROP = int(no_PROP_f);
   yes_PROP = 150 - no_PROP;
 
-
   for (int i = mappingOffset; i >= 0 ; i--) {
     if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
     if(no_PROP==0){ proportionArray[i] = 1; }
@@ -276,26 +298,32 @@ void getProportions(){
     if(no_PROP==0){ proportionArray[i] = 1; }
   }
 
+}
 
-  //SHOW
 
-  for (int i = 0; i < 150; i++) {
+void shuffleArray(int * array, int size)
+{
+  int last = 0;
+  int temp = array[last];
+  for (int i=0; i<size; i++)
+  {
+    int index = random(size);
+    array[last] = array[index];
+    last = index;
+  }
+  array[last] = temp;
+}
 
-    if(proportionArray[i]==0){
-      leds[i] = noColor;
-    }
-    if(proportionArray[i]==1){
-      leds[i] = yesColor;
-    }
+
+
+void oscillate(){
+
+  if(acting == false){
 
   }
 
-  // + SHUFFLE ALGO
-
-
-
-
 }
+
 
 
 //////////////////////////////////////////////
@@ -318,7 +346,8 @@ void getMemory(){
     no_NUM = preferences.getUInt("no", 0);
     Serial.println("Yes EEPROM "+String(yes_NUM)+ " No EEPROM "+String(yes_NUM) );
     preferences.end();
-    // TODO SIGNALER PROBLEME SD VIA AFFICHEURS
+    display1.setSegments(NO_seg);
+    display2.setSegments(SD_seg);
   }
 
 }
