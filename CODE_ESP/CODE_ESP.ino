@@ -25,7 +25,7 @@ CRGB leds[NUM_LEDS];
 int yesState, noState, resetState = 0;
 // Yes & No
 unsigned long Taction, Tnow = 0;
-unsigned long eventDuration = 10000;
+unsigned long eventDuration = 11000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
@@ -196,10 +196,6 @@ void checkBtns(){
   }
 
 }
-
-
-
-
 
 
 

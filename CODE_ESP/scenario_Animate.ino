@@ -43,7 +43,7 @@ void animate(){
       if(justVoted=="no"){ int pos = roadsNo[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
     }
     // FILL
-    int fillFrame = actionFrame - 17; // Start offset: frame 20
+    int fillFrame = actionFrame - 27; // Start offset: à frame i
     if((fillFrame>0)&&(fillFrame<=150)) {
       int pos = orderArray[fillFrame-1];
       if(proportionArray[pos]==0){ leds[pos] = noColor; }
@@ -70,7 +70,7 @@ void animate(){
     }
 
     // EMPTY
-    int emptyFrame = actionFrame - 180;  // Start offset: frame 200
+    int emptyFrame = actionFrame - 190;  // Start offset à frame i
     if ((emptyFrame>0)&&(emptyFrame<=150)) {
       int pos = orderArray[emptyFrame-1];
       leds[pos] = CRGB(0,0,0) ;
