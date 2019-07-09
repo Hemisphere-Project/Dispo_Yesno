@@ -70,9 +70,6 @@ class Blinker
 				OnTime = random(OnTimeMin,OnTimeMax);
 				OffTime = random(OffTimeMin,OffTimeMax);
 				pos = random(NUM_LEDS);
-				// if(acting==true){
-				// 	pos = orderArray[id+130];// 20 last restés allumés lors de l'empty de l'animate
-				// }
 			}
     }
 
@@ -139,8 +136,8 @@ void oscillate() {
 		// master = master*master/255;
 		if(master<0){ master = 0; }
 
-		// Fix
-		// if((Tnow-TendOfAction)<500){ master = 0; }
+		// Fix (smooth restart)
+		if((Tnow-TendOfAction)<400){ master = 0; }
 
 		FastLED.setBrightness(  master );
 
