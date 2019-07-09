@@ -41,7 +41,7 @@ bool acting = false;
 int actionFrame = 0;
 int framePeriod = 100;
 int framePeriodTemp;
-unsigned long TlastFrame = 0;
+int TlastFrame = 0;
 CRGB voteColor;
 CRGB noColor = CRGB(255,0,0);
 CRGB yesColor = CRGB(255,255,255);
@@ -52,8 +52,8 @@ int proportionArray[150];
 int mappingOffset = 74; // MAPPING: NUM PIXELS BEFORE DATA GAP
 int orderArray[NUM_LEDS];
 
-// OSCILLATE
-int choosePeriod = 100;
+//OSCILLATE
+unsigned long TendOfAction = 0;
 
 // MEMORY
 Preferences preferences;
@@ -134,6 +134,7 @@ void loop() {
   checkBackups();
   animate();
   oscillate();
+
   FastLED.show();
   delay(1);
 
@@ -196,133 +197,9 @@ void checkBtns(){
 
 }
 
-//////////////////////////////////////////////
-/////////////////   ACTIONS   ////////////////
-//////////////////////////////////////////////
-
-void launchAnim(){
-
-  acting = true;
-  actionFrame = 0;
-  framePeriodTemp = framePeriod;
-  shuffleArray(orderArray,NUM_LEDS);
-  calcProportions();
-  roadNumber = random(0,4);
-  if(justVoted=="yes"){voteColor = yesColor;}
-  if(justVoted=="no"){voteColor = noColor;}
-  // Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
-}
-
-void endOfAction(){
-  Serial.println("ANIM DONE");
-  acting = false;
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CRGB(0,0,0);
-  }
-}
 
 
 
-void animate(){
-
-  if ((Tnow-TlastFrame > framePeriodTemp)&&(acting==true)){
-
-    // CHEMIN FIXE
-    if(actionFrame<=7) {
-      FastLED.clear();
-      leds[actionFrame] = voteColor; // 1 2 3 4 5 6 7
-    }
-    // CHEMIN GAUCHE DROITE
-    if((actionFrame>7)&&(actionFrame<=10)) {
-      FastLED.clear();
-      if(justVoted=="yes"){ int pos = roadsYes[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
-      if(justVoted=="no"){ int pos = roadsNo[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
-    }
-    // FILL
-    if((actionFrame>16)&&(actionFrame<=170)) {
-      int pos = orderArray[actionFrame-17];
-      if(proportionArray[pos]==0){ leds[pos] = noColor; }
-      if(proportionArray[pos]==1){ leds[pos] = yesColor; }
-      framePeriodTemp = framePeriodTemp - actionFrame*1.5;
-      if(framePeriodTemp<10){ framePeriodTemp = 10; }
-    }
-
-    if(actionFrame==170){
-      framePeriodTemp = framePeriod;
-    }
-
-    // DISPLAYS
-    if ((actionFrame % 3 == 0)&&(actionFrame < 10)) { display1.setSegments(line2); display2.setSegments(line2); }
-    if ((actionFrame % 3 == 1)&&(actionFrame < 10)) { display1.setSegments(line3); display2.setSegments(line3); }
-    if ((actionFrame % 3 == 2)&&(actionFrame < 10)) { display1.setSegments(line1); display2.setSegments(line1); }
-    if(actionFrame==10){
-      showNumber_NEWORDER1(no_NUM, display1);
-      showNumber_NEWORDER1(yes_NUM, display2);
-    }
-
-    if (actionFrame>200) {
-      int pos = orderArray[actionFrame-201];
-      leds[pos] = CRGB(0,0,0) ;
-      framePeriodTemp = framePeriodTemp - actionFrame/10;
-      if(framePeriodTemp<10){ framePeriodTemp = 10; }
-    }
-
-
-    // NEXT
-    actionFrame ++;
-    TlastFrame = Tnow;
-
-  }
-
-}
-
-void calcProportions(){
-
-
-  float no_NUM_f, no_PROP_f, yes_NUM_f, yes_PROP_f;
-  no_NUM_f = no_NUM;
-  yes_NUM_f = yes_NUM;
-  int no_PROP, yes_PROP;
-
-  no_PROP_f = (no_NUM_f/(no_NUM_f+yes_NUM_f))*150;
-  no_PROP = int(no_PROP_f);
-  yes_PROP = 150 - no_PROP;
-
-  for (int i = mappingOffset; i >= 0 ; i--) {
-    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
-    if(no_PROP==0){ proportionArray[i] = 1; }
-  }
-
-  for (int i = mappingOffset+1; i < 150 ; i++) {
-    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
-    if(no_PROP==0){ proportionArray[i] = 1; }
-  }
-
-}
-
-
-void shuffleArray(int * array, int size)
-{
-  int last = 0;
-  int temp = array[last];
-  for (int i=0; i<size; i++)
-  {
-    int index = random(size);
-    array[last] = array[index];
-    last = index;
-  }
-  array[last] = temp;
-}
-
-
-
-void oscillate(){
-
-  if(acting == false){
-
-  }
-
-}
 
 
 
