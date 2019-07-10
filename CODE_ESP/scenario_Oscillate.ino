@@ -61,7 +61,7 @@ class Blinker
     }
     // OFF
     if(Tnow-Tlast>OffTime+OnTime){
-			val = val - 2;
+			val = val - 4;
 			if(val<0){val=255;}
 			leds[pos] = CRGB(val,val,val);
       // RELOOP
