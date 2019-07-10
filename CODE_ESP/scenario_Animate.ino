@@ -17,11 +17,12 @@ void launchAnim(){
 }
 
 void endOfAction(){
-  Serial.println("ANIM DONE");
+
   acting = false;
   TendOfAction = Tnow;
   display1.setSegments(blank);
   display2.setSegments(blank);
+  // Serial.println("ANIM DONE");
 }
 
 
@@ -41,6 +42,7 @@ void animate(){
       FastLED.clear();
       if(justVoted=="yes"){ int pos = roadsYes[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
       if(justVoted=="no"){ int pos = roadsNo[roadNumber][actionFrame-8]; leds[pos] = voteColor; }
+
     }
     // FILL
     int fillFrame = actionFrame - 27; // Start offset: à frame i
@@ -61,10 +63,10 @@ void animate(){
     }
 
     // DISPLAYS
-    if ((actionFrame % 3 == 0)&&(actionFrame < 10)) { display1.setSegments(line2); display2.setSegments(line2); }
-    if ((actionFrame % 3 == 1)&&(actionFrame < 10)) { display1.setSegments(line3); display2.setSegments(line3); }
-    if ((actionFrame % 3 == 2)&&(actionFrame < 10)) { display1.setSegments(line1); display2.setSegments(line1); }
-    if(actionFrame==10){
+    if ((actionFrame % 3 == 0)&&(actionFrame < 11)) { display1.setSegments(line2); display2.setSegments(line2); }
+    if ((actionFrame % 3 == 1)&&(actionFrame < 11)) { display1.setSegments(line3); display2.setSegments(line3); }
+    if ((actionFrame % 3 == 2)&&(actionFrame < 11)) { display1.setSegments(line1); display2.setSegments(line1); }
+    if(actionFrame==11){
       showNumber_NEWORDER1(no_NUM, display1);
       showNumber_NEWORDER1(yes_NUM, display2);
     }
