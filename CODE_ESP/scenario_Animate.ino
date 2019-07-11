@@ -45,7 +45,7 @@ void animate(){
 
     }
     // FILL
-    int fillFrame = actionFrame - 27; // Start offset: à frame i
+    int fillFrame = actionFrame - 23; // Start offset: à frame i
     if((fillFrame>0)&&(fillFrame<=150)) {
       int pos = orderArray[fillFrame-1];
       if(proportionArray[pos]==0){ leds[pos] = noColor; }
@@ -59,7 +59,7 @@ void animate(){
     }
 
     if(fillFrame==150){
-      framePeriodTemp = framePeriod;
+      framePeriodTemp = 100;
     }
 
     // DISPLAYS
@@ -72,7 +72,7 @@ void animate(){
     }
 
     // EMPTY
-    int emptyFrame = actionFrame - 190;  // Start offset à frame i
+    int emptyFrame = actionFrame - 200;  // Start offset à frame i
     if ((emptyFrame>0)&&(emptyFrame<=150)) {
       int pos = orderArray[emptyFrame-1];
       leds[pos] = CRGB(0,0,0) ;

@@ -13,7 +13,7 @@
 
 #define NUM_LEDS 150
 #define LED_PIN 0
-#define BRIGHTNESS  50
+#define BRIGHTNESS  75
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
@@ -25,7 +25,7 @@ CRGB leds[NUM_LEDS];
 int yesState, noState, resetState = 0;
 // Yes & No
 unsigned long Taction, Tnow = 0;
-unsigned long eventDuration = 11000;
+unsigned long eventDuration = 13000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
@@ -39,7 +39,7 @@ bool resetting = false;
 char *justVoted = "none";
 bool acting = false;
 int actionFrame = 0;
-int framePeriod = 100;
+int framePeriod = 150;
 int framePeriodTemp;
 int TlastFrame = 0;
 CRGB voteColor;
