@@ -1,3 +1,11 @@
+// TODO
+// - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit 2 museum hours
+// - OTA ?
+// - Unlog Serial
+
+// Specific To 4 Devices:
+// - Adjust roadsNo, roadsYes, mappingOffset
+
 // LEDS
 #include <FastLED.h>
 // SD
