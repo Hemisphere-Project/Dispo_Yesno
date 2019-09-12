@@ -29,8 +29,8 @@ unsigned long eventDuration = 13000;
 bool listenToYesNo = true;
 // Reset
 unsigned long Treset = 0;
-unsigned long resetDelay = 2000;
-unsigned long resetDuration = 10000;
+unsigned long resetPressDuration = 4000;
+unsigned long resetDuration = 5000;
 bool pressingReset = false;
 bool resetting = false;
 
@@ -77,6 +77,7 @@ unsigned long backupPeriod_EEPROM = 14400000; // 4 hours
 TM1637Display display1(CLK1, DIO1, 100, NUMBEROFDIGITS);
 TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
 const uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+const uint8_t zero[] = { 0, 0, 0, SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F, 0, 0 };
 const uint8_t line1[] = { SEG_D,SEG_D,SEG_D,SEG_D,SEG_D,SEG_D };
 const uint8_t line2[] = { SEG_G,SEG_G,SEG_G,SEG_G,SEG_G,SEG_G };
 const uint8_t line3[] = { SEG_A,SEG_A,SEG_A,SEG_A,SEG_A,SEG_A };
@@ -178,21 +179,26 @@ void checkBtns(){
     pressingReset = true;
     Treset = Tnow;
     Serial.println("STARTED PRESSING RESET");
+    display1.setSegments(line2); display2.setSegments(line2);
   }
   if ((resetState == HIGH)&&(pressingReset == true)&&(resetting == false)) {
     pressingReset = false;
     Serial.println("STOPPED PRESSING RESET");
+    display1.setSegments(blank); display2.setSegments(blank);
   }
   // LAUNCH RESET
-  if ((Tnow-Treset > resetDelay)&&(pressingReset == true)&&(resetting == false)){
+  if ((Tnow-Treset > resetPressDuration)&&(pressingReset == true)&&(resetting == false)){
     resetting = true;
     reset();
+    display1.setSegments(zero); display2.setSegments(zero);
+
   }
   // RESET OVER - LISTEN AGAIN
-  if ((Tnow-Treset > resetDelay+resetDuration)&&(resetting == true)){
+  if ((Tnow-Treset > resetPressDuration+resetDuration)&&(resetting == true)){
     pressingReset = false;
     resetting = false;
     Serial.println("DONE RESETTING");
+    display1.setSegments(blank); display2.setSegments(blank);
   }
 
 }
