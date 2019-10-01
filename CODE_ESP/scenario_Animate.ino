@@ -48,8 +48,8 @@ void animate(){
     int fillFrame = actionFrame - 23; // Start offset: à frame i
     if((fillFrame>0)&&(fillFrame<=150)) {
       int pos = orderArray[fillFrame-1];
-      if(proportionArray[pos]==0){ leds[pos] = noColor; }
-      if(proportionArray[pos]==1){ leds[pos] = yesColor; }
+      if(proportionArray[pos]==0){ leds[pos] = yesColor; }
+      if(proportionArray[pos]==1){ leds[pos] = noColor; }
       //EASE IN-OUT
       if((fillFrame>0)&&(fillFrame<=2)){ framePeriodTemp = 100; }
       if((fillFrame>2)&&(fillFrame<=7)){ framePeriodTemp = 80; }
@@ -67,8 +67,8 @@ void animate(){
     if ((actionFrame % 3 == 1)&&(actionFrame < 11)) { display1.setSegments(line3); display2.setSegments(line3); }
     if ((actionFrame % 3 == 2)&&(actionFrame < 11)) { display1.setSegments(line1); display2.setSegments(line1); }
     if(actionFrame==11){
-      showNumber_NEWORDER1(no_NUM, display1);
-      showNumber_NEWORDER1(yes_NUM, display2);
+      showNumber_NEWORDER1(yes_NUM, display1);
+      showNumber_NEWORDER1(no_NUM, display2);
     }
 
     // EMPTY
@@ -91,26 +91,50 @@ void animate(){
 void calcProportions(){
 
 
-  float no_NUM_f, no_PROP_f, yes_NUM_f, yes_PROP_f;
-  no_NUM_f = no_NUM;
+  float yes_NUM_f, yes_PROP_f, no_NUM_f, no_PROP_f;
   yes_NUM_f = yes_NUM;
-  int no_PROP, yes_PROP;
+  no_NUM_f = no_NUM;
+  int yes_PROP, no_PROP;
 
-  no_PROP_f = (no_NUM_f/(no_NUM_f+yes_NUM_f))*150;
-  no_PROP = int(no_PROP_f);
-  yes_PROP = 150 - no_PROP;
+  yes_PROP_f = (yes_NUM_f/(yes_NUM_f+no_NUM_f))*150;
+  yes_PROP = int(yes_PROP_f);
+  no_PROP = 150 - yes_PROP;
 
   for (int i = mappingOffset; i >= 0 ; i--) {
-    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
-    if(no_PROP==0){ proportionArray[i] = 1; }
+    if(yes_PROP>0){ proportionArray[i] = 0; yes_PROP --; }
+    if(yes_PROP==0){ proportionArray[i] = 1; }
   }
 
   for (int i = mappingOffset+1; i < 150 ; i++) {
-    if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
-    if(no_PROP==0){ proportionArray[i] = 1; }
+    if(yes_PROP>0){ proportionArray[i] = 0; yes_PROP --; }
+    if(yes_PROP==0){ proportionArray[i] = 1; }
   }
 
 }
+
+// void calcProportionsOLD(){
+//
+//
+//   float no_NUM_f, no_PROP_f, yes_NUM_f, yes_PROP_f;
+//   no_NUM_f = no_NUM;
+//   yes_NUM_f = yes_NUM;
+//   int no_PROP, yes_PROP;
+//
+//   no_PROP_f = (no_NUM_f/(no_NUM_f+yes_NUM_f))*150;
+//   no_PROP = int(no_PROP_f);
+//   yes_PROP = 150 - no_PROP;
+//
+//   for (int i = mappingOffset; i >= 0 ; i--) {
+//     if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
+//     if(no_PROP==0){ proportionArray[i] = 1; }
+//   }
+//
+//   for (int i = mappingOffset+1; i < 150 ; i++) {
+//     if(no_PROP>0){ proportionArray[i] = 0; no_PROP --; }
+//     if(no_PROP==0){ proportionArray[i] = 1; }
+//   }
+//
+// }
 
 
 void shuffleArray(int * array, int size)

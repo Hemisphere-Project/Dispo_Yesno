@@ -1,10 +1,14 @@
 // TODO
+// - REVERSE COLORS YES NO
+// OK - Preferences: PANEL_ID
 // - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit 2 museum hours
 // - OTA ?
 // - Unlog Serial
 
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
+
+#define PANEL_ID 1
 
 // LEDS
 #include <FastLED.h>
@@ -19,16 +23,15 @@
 #include "src/TM1637/TM1637Display.h"
 
 
-#define NUM_LEDS 150
-#define LED_PIN 0
+#define NUM_LEDS    150
+#define LED_PIN     0
 #define BRIGHTNESS  75
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
-
-#define NOPIN         4
-#define YESPIN        16
-#define RESETPIN      17
+#define YESPIN       4
+#define NOPIN        16
+#define RESETPIN     17
 // Btns States
 int yesState, noState, resetState = 0;
 // Yes & No
@@ -54,8 +57,8 @@ CRGB voteColor;
 CRGB noColor = CRGB(255,0,0);
 CRGB yesColor = CRGB(255,255,255);
 int roadNumber = 0;
-int roadsNo[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
-int roadsYes[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
+int roadsYes[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
+int roadsNo[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
 int proportionArray[150];
 int mappingOffset = 74; // MAPPING: NUM PIXELS BEFORE DATA GAP
 int orderArray[NUM_LEDS];
@@ -65,6 +68,7 @@ unsigned long TendOfAction = 0;
 
 // MEMORY
 Preferences preferences;
+unsigned int panelid = 0;
 char readBuffer[100];
 int yes_NUM, no_NUM;
 // Backups timings
@@ -81,7 +85,6 @@ unsigned long backupPeriod_EEPROM = 14400000; // 4 hours
 #define DIO2 33
 #define NUMBEROFDIGITS 6
 #define NOKEYPAD
-
 TM1637Display display1(CLK1, DIO1, 100, NUMBEROFDIGITS);
 TM1637Display display2(CLK2, DIO2, 100, NUMBEROFDIGITS);
 const uint8_t blank[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -126,10 +129,18 @@ void setup() {
   SPI.begin(21, 19, 18, 5);  // SCK / MISO(DO) / MOSI(DI) / CS(SS)
   getMemory();
 
-  //FILL ARRAYS
+  // FILL ARRAYS
   for (int i = 0; i < NUM_LEDS; i++) {
     orderArray[i]=i;
   }
+
+  // PANEL ID
+  preferences.begin("my-app", false);
+  #ifdef PANEL_ID
+    preferences.putUInt("panelid", PANEL_ID);
+  #endif
+  panelid = preferences.getUInt("panelid", 254);
+  preferences.end();
 
 }
 

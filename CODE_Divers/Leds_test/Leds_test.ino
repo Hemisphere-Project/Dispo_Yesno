@@ -4,7 +4,7 @@
 #define BRIGHTNESS  50
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
-#define NUM_LEDS 4
+#define NUM_LEDS 151
 
 CRGB leds[NUM_LEDS];
 
@@ -14,15 +14,14 @@ void setup() {
     FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     FastLED.setBrightness(  BRIGHTNESS );
 
-    for (int i = 0; i < 2; i++) {
-      leds[i] = CRGB(255,0,0);
-    }
-    for (int i = 2; i < NUM_LEDS; i++) {
+    for (int i = 0; i < 75; i++) {
       leds[i] = CRGB(255,255,255);
     }
+    for (int i = 75; i < 150; i++) {
+      leds[i] = CRGB(255,0,0);
+    }
 
-    // leds[0] = CRGB(0,0,255);
-    // leds[75] = CRGB(0,255,0);
+    leds[150] = CRGB(0,255,0);
 
     FastLED.show();
 
@@ -30,5 +29,8 @@ void setup() {
 
 
 void loop() {
+
+  FastLED.show();
+  delay(200);
 
 }
