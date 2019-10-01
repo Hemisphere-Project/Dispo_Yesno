@@ -1,14 +1,15 @@
 // TODO
-// - REVERSE COLORS YES NO
-// OK - Preferences: PANEL_ID
-// - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit 2 museum hours
-// - OTA ?
-// - Unlog Serial
+// - REVERSE COLORS YES NO                                                        -- CHECK
+// - Preferences: PANEL_ID                                                        -- CHECK
+// - PANEL_ID : Selective roads & mapping offset                                  -- CHECK
+// - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit to museum hours  -- TODO
+// - OTA ?                                                                        -- TODO
+// - Unlog Serial                                                                 -- TODO
 
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
-#define PANEL_ID 1
+#define PANEL_ID 2
 
 // LEDS
 #include <FastLED.h>
@@ -23,7 +24,7 @@
 #include "src/TM1637/TM1637Display.h"
 
 
-#define NUM_LEDS    150
+#define NUM_LEDS    151
 #define LED_PIN     0
 #define BRIGHTNESS  75
 #define LED_TYPE    WS2811
@@ -57,11 +58,24 @@ CRGB voteColor;
 CRGB noColor = CRGB(255,0,0);
 CRGB yesColor = CRGB(255,255,255);
 int roadNumber = 0;
-int roadsYes[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
-int roadsNo[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
-int proportionArray[150];
-int mappingOffset = 74; // MAPPING: NUM PIXELS BEFORE DATA GAP
 int orderArray[NUM_LEDS];
+int proportionArray[150];
+int roadsYes[ 4 ][ 3 ];
+int roadsNo[ 4 ][ 3 ];
+int mappingOffset;
+// int roadsYes[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
+// int roadsNo[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
+int roadsYes_AllPanels[ 4 ][ 4 ][ 3 ] = {
+{ { 9, 18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } },    // YES Panel 1
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } },   // YES Panel 2
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } },   // YES Panel 3
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } } }; // YES Panel 4
+int roadsNo_AllPanels[ 4 ][ 4 ][ 3 ] = {
+{ { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } },// NO Panel 1
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } },     // NO Panel 2
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } },     // NO Panel 3
+{ { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } } };   // NO Panel 4
+int mappingOffset_AllPanels[ 4 ] = { 74 , 74 , 74 , 74 };
 
 //OSCILLATE
 unsigned long TendOfAction = 0;
@@ -141,6 +155,19 @@ void setup() {
   #endif
   panelid = preferences.getUInt("panelid", 254);
   preferences.end();
+  // ID -> Roads Yes & No, mappingOffset
+
+  for (size_t i = 0; i < 4; i++) {
+    for (size_t j = 0; j < 3; j++) {
+      roadsNo[i][j]=roadsNo_AllPanels[panelid-1][i][j];
+    }
+  }
+  for (size_t i = 0; i < 4; i++) {
+    for (size_t j = 0; j < 3; j++) {
+      roadsYes[i][j]=roadsYes_AllPanels[panelid-1][i][j];
+    }
+  }
+  mappingOffset = mappingOffset_AllPanels[panelid-1];
 
 }
 
