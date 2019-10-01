@@ -1,15 +1,16 @@
 // TODO
 // - REVERSE COLORS YES NO                                                        -- CHECK
-// - Preferences: PANEL_ID                                                        -- CHECK
-// - PANEL_ID : Selective roads & mapping offset                                  -- CHECK
+// - PANEL_ID, Roads & mappingOffset =  function(panelid)                         -- CHECK
+// - CONFIG MODE                                                                  -- CHECK
 // - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit to museum hours  -- TODO
-// - OTA ?                                                                        -- TODO
+// - OTA                                                                          -- ?
 // - Unlog Serial                                                                 -- TODO
 
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
-#define PANEL_ID 2
+#define PANEL_ID 1
+#define CONFIG_MODE
 
 // LEDS
 #include <FastLED.h>
@@ -26,7 +27,7 @@
 
 #define NUM_LEDS    151
 #define LED_PIN     0
-#define BRIGHTNESS  75
+#define BRIGHTNESS  255//75
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
@@ -45,7 +46,10 @@ unsigned long resetPressDuration = 4000;
 unsigned long resetDuration = 5000;
 bool pressingReset = false;
 bool resetting = false;
-
+// Config Mode
+int roadYesSelector = 0;
+int roadNoSelector = 0;
+unsigned long TlastConf = 0;
 
 // ANIMATE
 char *justVoted = "none";
@@ -65,17 +69,19 @@ int roadsNo[ 4 ][ 3 ];
 int mappingOffset;
 // int roadsYes[ 4 ][ 3 ] = { { 9,18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } };
 // int roadsNo[ 4 ][ 3 ] = { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } };
-int roadsYes_AllPanels[ 4 ][ 4 ][ 3 ] = {
+int roadsYes_AllPanels[ 5 ][ 4 ][ 3 ] = {
+{ { 9, 18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } },    // YES Panel Proto
 { { 9, 18, 38 }, { 18, 40, 44 }, { 21, 37, 45 }, { 34, 47, 73 } },    // YES Panel 1
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } },   // YES Panel 2
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } },   // YES Panel 3
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 } } }; // YES Panel 4
-int roadsNo_AllPanels[ 4 ][ 4 ][ 3 ] = {
+int roadsNo_AllPanels[ 5 ][ 4 ][ 3 ] = {
+{ { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } },// NO Panel Proto
 { { 9, 84, 129 }, { 83, 112, 140 }, { 82, 98, 113 }, { 85, 95, 120 } },// NO Panel 1
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } },     // NO Panel 2
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } },     // NO Panel 3
 { { 10, 11, 12 }, { 10, 11, 12 }, { 10, 11, 12 },{ 10, 11, 12 } } };   // NO Panel 4
-int mappingOffset_AllPanels[ 4 ] = { 74 , 74 , 74 , 74 };
+int mappingOffset_AllPanels[ 5 ] = { 75 , 74 , 74 , 74, 74 };           // proto, 1, 2, 3, 4
 
 //OSCILLATE
 unsigned long TendOfAction = 0;
@@ -156,32 +162,34 @@ void setup() {
   panelid = preferences.getUInt("panelid", 254);
   preferences.end();
   // ID -> Roads Yes & No, mappingOffset
-
   for (size_t i = 0; i < 4; i++) {
     for (size_t j = 0; j < 3; j++) {
-      roadsNo[i][j]=roadsNo_AllPanels[panelid-1][i][j];
+      roadsNo[i][j]=roadsNo_AllPanels[panelid][i][j];
     }
   }
   for (size_t i = 0; i < 4; i++) {
     for (size_t j = 0; j < 3; j++) {
-      roadsYes[i][j]=roadsYes_AllPanels[panelid-1][i][j];
+      roadsYes[i][j]=roadsYes_AllPanels[panelid][i][j];
     }
   }
-  mappingOffset = mappingOffset_AllPanels[panelid-1];
+  mappingOffset = mappingOffset_AllPanels[panelid];
 
 }
 
 
 void loop() {
 
-  // FastLED.clear();
-
   Tnow = millis();
+
+  #ifdef CONFIG_MODE
+    configMode();
+    return;
+  #endif
+
   checkBtns();
   checkBackups();
   animate();
   oscillate();
-
   FastLED.show();
   delay(1);
 
@@ -311,5 +319,46 @@ void reset(){
   preferences.end();
   TlastBackup_SD = Tnow;
   TlastBackup_EEPROM = Tnow;
+
+}
+
+
+void configMode(){
+
+  FastLED.clear();
+
+  // ALL LEDS CHECK
+  // for (int i = 0; i < NUM_LEDS; i++) { leds[i] = CRGB(0,10,0); }
+  for (int i = 0; i < mappingOffset; i++) { leds[i] = CRGB(10,10,10); }
+  for (int i = mappingOffset; i < NUM_LEDS; i++) { leds[i] = CRGB(10,0,0); }
+  // leds[mappingOffset]=CRGB(0,0,255);
+  // FIRST LEDS
+  for (int i = 0; i < 7; i++) { leds[i]=yesColor; }
+
+  // BTNS
+  yesState = digitalRead(YESPIN);
+  noState = digitalRead(NOPIN);
+
+  if((yesState==LOW)&&(Tnow-TlastConf>500)){
+    roadYesSelector++;
+    TlastConf=Tnow;
+    if(roadYesSelector==4){roadYesSelector=0;}
+    showNumber_NEWORDER1(roadYesSelector, display1);
+  }
+  if((noState==LOW)&&(Tnow-TlastConf>500)){
+    roadNoSelector++;
+    TlastConf=Tnow;
+    if(roadYesSelector==4){roadYesSelector=0;}
+    showNumber_NEWORDER1(roadNoSelector, display2);
+  }
+
+  // ROADS SHOW
+  for (int j = 0; j < 3; j++) {
+    int posy = roadsYes[roadYesSelector][j]; leds[posy] = yesColor;
+    int posn = roadsNo[roadNoSelector][j]; leds[posn] = noColor;
+  }
+
+  FastLED.show();
+  delay(1);
 
 }
