@@ -1,4 +1,3 @@
-#define DEBUGFLAG
 
 #ifdef DEBUGFLAG
  #define LOGSETUP()     Serial.begin(115200)
@@ -18,4 +17,3 @@
  #define LOGF4(x, y1, y2, y3, y4)
  #define LOG(x)
 #endif
-

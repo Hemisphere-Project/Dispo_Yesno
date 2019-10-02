@@ -2,17 +2,17 @@
 // - REVERSE COLORS YES NO                                                        -- CHECK
 // - PANEL_ID, Roads & mappingOffset =  function(panelid)                         -- CHECK
 // - CONFIG MODE                                                                  -- CHECK
+// - OTA                                                                          -- CHECK
+// - Unlog Serial                                                                 -- CHECK
 // - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit to museum hours  -- TODO
-// - OTA                                                                          -- ?
-// - Unlog Serial                                                                 -- TODO
 
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
-#define YN_VERSION  1.0   // add OTA
-
-#define PANEL_ID 2
-#define CONFIG_MODE
+#define YN_VERSION  1.0
+// #define PANEL_ID 0
+// #define CONFIG_MODE
+// #define DEBUGFLAG
 
 // DEBUG
 #include "debug.h"
