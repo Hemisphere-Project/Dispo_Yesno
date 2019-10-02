@@ -9,9 +9,13 @@
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
+#define YN_VERSION  1.0   // add OTA
+
 #define PANEL_ID 2
 #define CONFIG_MODE
 
+// DEBUG
+#include "debug.h"
 // LEDS
 #include <FastLED.h>
 // SD
@@ -127,7 +131,7 @@ void setup() {
 
   delay(2000);
   // SERIAL
-  Serial.begin(115200);
+  LOGSETUP();
 
   // LEDS
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
@@ -174,10 +178,17 @@ void setup() {
   }
   mappingOffset = mappingOffset_AllPanels[panelid];
 
+  // WIFI
+  wifi_ota( "yesno-" + String(panelid) + " v" + String(YN_VERSION, 1) );
+  wifi_maxTry(3); // switch off wifi if no network found
+  wifi_connect("hmsphr-ota", "azertyui");
+
 }
 
 
 void loop() {
+
+  wifi_loop();
 
   Tnow = millis();
 
@@ -232,12 +243,12 @@ void checkBtns(){
   if ((resetState == LOW)&&(pressingReset == false)&&(resetting == false)) {
     pressingReset = true;
     Treset = Tnow;
-    Serial.println("STARTED PRESSING RESET");
+    LOG("STARTED PRESSING RESET");
     display1.setSegments(line2); display2.setSegments(line2);
   }
   if ((resetState == HIGH)&&(pressingReset == true)&&(resetting == false)) {
     pressingReset = false;
-    Serial.println("STOPPED PRESSING RESET");
+    LOG("STOPPED PRESSING RESET");
     display1.setSegments(blank); display2.setSegments(blank);
   }
   // LAUNCH RESET
@@ -251,7 +262,7 @@ void checkBtns(){
   if ((Tnow-Treset > resetPressDuration+resetDuration)&&(resetting == true)){
     pressingReset = false;
     resetting = false;
-    Serial.println("DONE RESETTING");
+    LOG("DONE RESETTING");
     display1.setSegments(blank); display2.setSegments(blank);
   }
 
@@ -269,15 +280,15 @@ void getMemory(){
   if(SD.begin()){
     yes_NUM = readFileInt(SD, "/oui.txt");
     no_NUM = readFileInt(SD, "/non.txt");
-    Serial.println("Yes SD "+String(yes_NUM)+" No SD "+String(no_NUM));
+    LOG("Yes SD "+String(yes_NUM)+" No SD "+String(no_NUM));
   }
   // IF SD PROBLEM - READ EEPROM
   if(!SD.begin()){
-    Serial.println("Card Mount Failed");
+    LOG("Card Mount Failed");
     preferences.begin("my-app", false);
     yes_NUM = preferences.getUInt("yes", 0);
     no_NUM = preferences.getUInt("no", 0);
-    Serial.println("Yes EEPROM "+String(yes_NUM)+ " No EEPROM "+String(yes_NUM) );
+    LOG("Yes EEPROM "+String(yes_NUM)+ " No EEPROM "+String(yes_NUM) );
     preferences.end();
     display1.setSegments(NO_seg);
     display2.setSegments(SD_seg);
@@ -305,7 +316,7 @@ void checkBackups(){
 
 void reset(){
 
-  Serial.println("RESET");
+  LOG("RESET");
   String text = "Au dernier reset : OUI "+String(yes_NUM)+" NON "+String(no_NUM)+'\n';
   appendFile(SD, "/archive.txt", text.c_str());
 
