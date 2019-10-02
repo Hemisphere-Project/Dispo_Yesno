@@ -1,8 +1,8 @@
-#define DEBUG
+#define DEBUGFLAG
 
-#ifdef DEBUG
+#ifdef DEBUGFLAG
  #define LOGSETUP()     Serial.begin(115200)
- #define LOGINL(x)   Serial.print (x)
+ #define LOGINL(x)      Serial.print (x)
  #define LOGDEC(x)      Serial.print (x, DEC)
  #define LOGHEX(x)      Serial.print (x, HEX)
  #define LOGF(x, y)     Serial.printf (x, y)

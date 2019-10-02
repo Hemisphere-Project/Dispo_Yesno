@@ -66,9 +66,9 @@ void showNumber_NEWORDER2(int num, TM1637Display display){
 
   int newnum = atoi(strB.c_str());
 
-  Serial.print(strB);
-  Serial.print("  ");
-  Serial.println(newnum);
+  LOGINL(strB);
+  LOGINL("  ");
+  LOG(newnum);
 
   display.showNumberDec(newnum, true);
 

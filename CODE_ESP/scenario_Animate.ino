@@ -13,7 +13,7 @@ void launchAnim(){
   if(justVoted=="yes"){voteColor = yesColor;}
   if(justVoted=="no"){voteColor = noColor;}
   FastLED.setBrightness(BRIGHTNESS);
-  // Serial.println("Yes "+String(yes_NUM)+" No "+String(no_NUM));
+  // LOG("Yes "+String(yes_NUM)+" No "+String(no_NUM));
 }
 
 void endOfAction(){
@@ -22,7 +22,7 @@ void endOfAction(){
   TendOfAction = Tnow;
   display1.setSegments(blank);
   display2.setSegments(blank);
-  // Serial.println("ANIM DONE");
+  // LOG("ANIM DONE");
 }
 
 

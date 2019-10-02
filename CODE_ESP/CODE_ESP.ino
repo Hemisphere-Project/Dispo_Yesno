@@ -180,7 +180,7 @@ void setup() {
 
   // WIFI
   wifi_ota( "yesno-" + String(panelid) + " v" + String(YN_VERSION, 1) );
-  wifi_maxTry(3); // switch off wifi if no network found
+  wifi_maxTry(20); // switch off wifi if no network found (retry ~2s)
   wifi_connect("hmsphr-ota", "azertyui");
 
 }

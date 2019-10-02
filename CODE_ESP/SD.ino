@@ -2,7 +2,7 @@
 void readFile(fs::FS &fs, const char * path){
     File file = fs.open(path);
     if(!file){
-        Serial.println("Failed to open file for reading");
+        LOG("Failed to open file for reading");
         return;
     }
     int i = 0;
@@ -33,13 +33,13 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 
     File file = fs.open(path, FILE_WRITE);
     if(!file){
-        Serial.println("Failed to open file for writing");
+        LOG("Failed to open file for writing");
         return;
     }
     if(file.print(message)){
-        // Serial.println("File written");
+        // LOG("File written");
     } else {
-        // Serial.println("Write failed");
+        // LOG("Write failed");
     }
     file.close();
 }
@@ -49,13 +49,13 @@ void appendFile(fs::FS &fs, const char * path, const char * message){
 
     File file = fs.open(path, FILE_APPEND);
     if(!file){
-        Serial.println("Failed to open file for appending");
+        LOG("Failed to open file for appending");
         return;
     }
     if(file.print(message)){
-        // Serial.println("Message appended");
+        // LOG("Message appended");
     } else {
-        // Serial.println("Append failed");
+        // LOG("Append failed");
     }
     file.close();
 }
