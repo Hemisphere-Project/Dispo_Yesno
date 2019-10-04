@@ -10,7 +10,7 @@
 // - Adjust roadsNo, roadsYes, mappingOffset
 
 #define YN_VERSION  1.0
-// #define PANEL_ID 0
+// #define PANEL_ID 1
 // #define CONFIG_MODE
 // #define DEBUGFLAG
 
@@ -99,8 +99,8 @@ int yes_NUM, no_NUM;
 unsigned long TlastBackup_SD, TlastBackup_EEPROM = 0;
 // unsigned long backupPeriod_SD = 20000;
 // unsigned long backupPeriod_EEPROM = 60000;
-unsigned long backupPeriod_SD = 900000; // 15 min
-unsigned long backupPeriod_EEPROM = 14400000; // 4 hours
+unsigned long backupPeriod_SD = 3600000; // 1hr
+unsigned long backupPeriod_EEPROM = 18000000; // 5hrs
 
 // DISPLAYS
 #define CLK1 26
