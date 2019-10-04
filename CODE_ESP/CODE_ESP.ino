@@ -4,12 +4,12 @@
 // - CONFIG MODE                                                                  -- CHECK
 // - OTA                                                                          -- CHECK
 // - Unlog Serial                                                                 -- CHECK
-// - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit to museum hours  -- TODO
+// - Adjust timings backupPeriod_SD / backupPeriod_EEPROM To fit to museum hours  -- CHECK
 
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
-#define YN_VERSION  1.0
+#define YN_VERSION  2.0
 // #define PANEL_ID 1
 // #define CONFIG_MODE
 // #define DEBUGFLAG
@@ -31,7 +31,7 @@
 
 #define NUM_LEDS    151
 #define LED_PIN     0
-#define BRIGHTNESS  255//75
+#define BRIGHTNESS  80//75
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
@@ -67,7 +67,7 @@ CRGB noColor = CRGB(255,0,0);
 CRGB yesColor = CRGB(255,255,255);
 int roadNumber = 0;
 int orderArray[NUM_LEDS];
-int proportionArray[150];
+int proportionArray[NUM_LEDS];
 int roadsYes[ 4 ][ 3 ];
 int roadsNo[ 4 ][ 3 ];
 int mappingOffset;
@@ -85,7 +85,7 @@ int roadsNo_AllPanels[ 5 ][ 4 ][ 3 ] = {
 { { 85, 113, 137 }, { 100, 128, 144 }, { 86, 97, 122 },{ 85, 127, 140 } },    // NO Panel 2
 { { 98, 112, 121 }, { 97, 114, 147 }, { 111, 136, 139 },{ 97, 119, 117 } },   // NO Panel 3
 { { 95, 123, 145 }, { 95, 111, 126 }, { 84, 115, 121 },{ 95, 124, 138 } } };  // NO Panel 4
-int mappingOffset_AllPanels[ 5 ] = { 75 , 75 , 75 , 75 , 76 };                // offsets: proto, 1, 2, 3, 4
+int mappingOffset_AllPanels[ 5 ] = { 75 , 75 , 74 , 75 , 76 };                // offsets: proto, 1, 2, 3, 4
 
 //OSCILLATE
 unsigned long TendOfAction = 0;
