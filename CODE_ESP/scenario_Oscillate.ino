@@ -21,6 +21,7 @@ class Blinker
 	long OffTime;
 	unsigned long Tlast;
 	int id;
+	int red_white;
 
   // Constructor
   public:
@@ -32,38 +33,25 @@ class Blinker
   OnTime = random(OnTimeMin,OnTimeMax);
   OffTime = random(OffTimeMin,OffTimeMax);
 	id = myid;
+	red_white = random(0,2);
   }
 
   void Update()
   {
-    // unsigned long Tnow = millis();
-
-
-		// // ON
-		// if(Tnow-Tlast>OffTime){
-		// 	leds[pos] = CRGB(255,255,255);
-		// }
-		// // OFF
-		// if(Tnow-Tlast>OffTime+OnTime){
-		// 	leds[pos] = CRGB(0,0,0);
-		// 	// RELOOP
-		// 	Tlast = Tnow;
-		// 	OnTime = random(OnTimeMin,OnTimeMax);
-		// 	OffTime = random(OffTimeMin,OffTimeMax);
-		// 	pos = random(NUM_LEDS);
-		// }
-
     // ON
     if((Tnow-Tlast>OffTime)&&(Tnow-Tlast<OffTime+OnTime)){
 			val = val + 10;
 			if(val>255){val=255;}
-			leds[pos] = CRGB(val,val,val);
+			if(red_white==0){ leds[pos] = CRGB(val,val,val); }
+			if(red_white==1){ leds[pos] = CRGB(val,0,0); }
+
     }
     // OFF
     if(Tnow-Tlast>OffTime+OnTime){
 			val = val - 4;
 			if(val<0){val=255;}
-			leds[pos] = CRGB(val,val,val);
+			if(red_white==0){ leds[pos] = CRGB(val,val,val); }
+			if(red_white==1){ leds[pos] = CRGB(val,0,0); }
       // RELOOP
 			if(val<=5){
 				Tlast = Tnow;

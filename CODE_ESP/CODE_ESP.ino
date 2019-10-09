@@ -9,7 +9,7 @@
 // Specific To 4 Devices:
 // - Adjust roadsNo, roadsYes, mappingOffset
 
-#define YN_VERSION  2.0
+#define YN_VERSION  2.2
 // #define PANEL_ID 1
 // #define CONFIG_MODE
 // #define DEBUGFLAG
@@ -31,7 +31,7 @@
 
 #define NUM_LEDS    151
 #define LED_PIN     0
-#define BRIGHTNESS  80//75
+#define BRIGHTNESS  50
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
